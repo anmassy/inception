@@ -15,6 +15,8 @@ RUN wget https://fr.wordpress.org/wordpress-6.0-fr_FR.tar.gz -P /var/www
 # Étape 4 : Décompression de l'archive et nettoyage
 RUN cd /var/www && tar -xzf wordpress-6.0-fr_FR.tar.gz && rm wordpress-6.0-fr_FR.tar.gz
 
+# RUN		chown -R root:root /var/www/wordpress
+
 # Étape 7 : Configuration de PHP
 # Modification de la configuration pour adapter PHP à WordPress
 RUN echo "clear_env = no" >> /etc/php/7.3/fpm/php-fpm.conf && \
@@ -34,4 +36,4 @@ RUN mkdir -p /run/php
 
 # Étape 11 : Commande de lancement
 ENTRYPOINT ["/usr/local/bin/auto_config.sh"]
-CMD ["/usr/sbin/php-fpm7.4", "-F"]
+CMD ["/usr/sbin/php-fpm7.3", "-F"]
