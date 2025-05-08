@@ -1,17 +1,18 @@
-all:
-	@docker compose -f ./srcs/docker-compose.yml up -d --build
+all: build run
 
-down:
-	@docker compose -f ./srcs/docker-compose.yml down
+data:
+	@if [ ! -d "home/anmassy/data/mariadb;" ] && [ ! -d "home/anmassy/data/wordpress;" ]; then \
+	mkdir -p home/anmassy/data/mariadb && mkdir -p home/anmassy/data/wordpress; fi
 
-re:
-	@docker compose -f srcs/docker-compose.yml up -d --build
+build: data
+	docker-compose -f srcs/docker-compose.yml build
 
-clean:
-	@docker stop $$(docker ps -qa);\
-	docker rm $$(docker ps -qa);\
-	docker rmi -f $$(docker images -qa);\
-	docker volume rm $$(docker volume ls -q);\
-	docker network rm $$(docker network ls -q);\
+run:
+	docker-compose -f srcs/docker-compose.yml up -d
 
-.PHONY: all re down clean
+vclean :
+	docker compose -f srcs/docker-compose.yml down --rmi all -v
+	@sudo rm -rf home
+
+fclean : vclean
+	docker system prune -af
