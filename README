@@ -1,0 +1,96 @@
+// Configurer les ajouts d'invités //
+sudo apt update
+sudo apt install bzip2
+sudo apt update
+sudo apt install build-essential gcc make perl
+sudo reboot
+
+// trouver un moyen de le faire facilement //
+Devices > Insert Guest Additions CD Image...
+```
+le faire manuelement
+sudo mount /dev/cdrom /mnt
+sudo sh /mnt/VBoxLinuxAdditions.run
+// ligne attendu //
+Building the VirtualBox Guest Additions kernel modules ...
+```
+sudo reboot
+
+// Installer Docker sur la VM //
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+```
+la commande ne parche pas
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+faire :
+sudo apt update
+sudo apt install ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+sudo apt update
+apt-cache policy docker-ce
+// resultat attendu : //
+```cpp
+docker-ce:
+  Installed: (none)
+  Candidate: 5:19.03.9~3-0~ubuntu-focal
+  Version table:
+     5:19.03.9~3-0~ubuntu-focal 500
+        500 https://download.docker.com/linux/ubuntu focal/stable amd64 Packages
+```
+
+
+// Installez Docker avec la commande //
+sudo apt install docker-ce
+sudo systemctl status docker
+// resultat attendu : //
+```cpp
+● docker.service - Docker Application Container Engine
+     Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2020-05-19 17:00:41 UTC; 17s ago
+TriggeredBy: ● docker.socket
+       Docs: https://docs.docker.com
+   Main PID: 24321 (dockerd)
+      Tasks: 8
+     Memory: 46.4M
+     CGroup: /system.slice/docker.service
+             └─24321 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+```
+
+// Configuration de l'utilisateur non root pour lui permettre d'exécuter Docker avec la commande //
+sudo usermod -aG docker ${USER}
+sudo reboot
+groups ${USER}
+
+// Installer Docker-compose sur la VM //
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+// installation de "tree" permet de voir l'arboressence du projet //
+sudo apt update
+sudo apt install tree
+tree --version
+
+// changer l'hote //
+sudo nano 127.0.0.1 anmassy.42.fr
+--> telecharger nano : sudo apt update && sudo apt install nano
+
+
+
+
+// installer une clef ssh pour push //
+ssh-keygen -t rsa -b 4096 -C "lantoinemassy@gmail.com"\
+// puis tu fais : //
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+// enfin il faut la coller sur github //
+cat ~/.ssh/id_rsa.pub
+
